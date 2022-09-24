@@ -1,21 +1,11 @@
-//import { CLIENTES } from './clientes.json';
-import { Cliente } from './cliente';
-
 import { Injectable } from '@angular/core';
-import { formatDate, DatePipe } from '@angular/common';
-import {
-  HttpClient,
-  HttpHeaders,
-  HttpEvent,
-  HttpRequest,
-} from '@angular/common/http';
-import { Router } from '@angular/router';
-import { Observable, throwError, of } from 'rxjs';
-import { map, catchError, tap } from 'rxjs/operators';
-
-import Swal from 'sweetalert2';
+import { Cliente } from './cliente';
 import { Region } from './region';
-//import localeEs from '@angular/common/locales/es-CO';
+import { HttpClient, HttpRequest, HttpEvent } from '@angular/common/http';
+import { map, catchError, tap } from 'rxjs/operators';
+import { Observable, throwError } from 'rxjs';
+
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root',
@@ -23,9 +13,17 @@ import { Region } from './region';
 export class ClienteService {
   private urlEndPoint: string = 'http://localhost:8080/api/clientes';
 
-  private httpHeader = new HttpHeaders({ 'content-type': 'application/json' });
+  //private httpHeader = new HttpHeaders({ 'content-type': 'application/json' });
 
   constructor(private http: HttpClient, private router: Router) {}
+
+  // private agregarAuthorizationHeader(){
+  //   let token = this.authService.token;
+  //   if(token != ""){
+  //     return this.httpHeader.append('Authorization','Bearer'+token);
+  //   }
+  //   return this.httpHeader;
+  // }
 
   getRegiones(): Observable<Region[]> {
     return this.http.get<Region[]>(this.urlEndPoint + '/regiones');
@@ -35,9 +33,9 @@ export class ClienteService {
     // return of(CLIENTES);
     return this.http.get(this.urlEndPoint + '/page/' + page).pipe(
       tap((response: any) => {
-        console.log('ClienteService: tap1');
+        // console.log('ClienteService: tap1');
         (response.content as Cliente[]).forEach((cliente) => {
-          console.log(cliente.nombre);
+          //console.log(cliente.nombre);
         });
       }),
       map((response: any) => {
@@ -55,76 +53,76 @@ export class ClienteService {
         return response;
       }),
       tap((response: any) => {
-        console.log('ClienteService: tap2');
+        //console.log('ClienteService: tap2');
         (response.content as Cliente[]).forEach((cliente) => {
-          console.log(cliente.nombre);
+          //console.log(cliente.nombre);
         });
       })
     );
   }
   create(cliente: Cliente): Observable<Cliente> {
-    if (cliente.region?.id === 0) {
-      cliente.region = null;
-    }
-    return this.http
-      .post(this.urlEndPoint, cliente, { headers: this.httpHeader })
-      .pipe(
-        map((response: any) => response.cliente as Cliente),
-        catchError((e) => {
-          if (e.status == 400) {
-            return throwError(() => e);
-          }
-          console.error(e.error.mensaje);
-          Swal.fire(e.error.mensaje, e.error.error, 'error');
+    return this.http.post(this.urlEndPoint, cliente).pipe(
+      map((response: any) => response.cliente as Cliente),
+      catchError((e) => {
+        if (e.status == 400) {
           return throwError(() => e);
-        })
-      );
+        }
+        if (e.error.mensaje) {
+          console.error(e.error.mensaje);
+        }
+        return throwError(() => e);
+      })
+    );
   }
 
   getCliente(id: any): Observable<Cliente> {
     return this.http.get<Cliente>(`${this.urlEndPoint}/${id}`).pipe(
       catchError((e) => {
-        this.router.navigate(['/clientes']);
-        console.error(e.error.mensaje);
-        Swal.fire('Error al editar', e.error.mensaje, 'error');
+        if (e.status != 401 && e.error.mensaje) {
+          this.router.navigate(['/clientes']);
+          console.error(e.error.mensaje);
+        }
         return throwError(() => e);
       })
     );
   }
   update(cliente: Cliente): Observable<any> {
     return this.http
-      .put<any>(`${this.urlEndPoint}/${cliente.id}`, cliente, {
-        headers: this.httpHeader,
-      })
+      .put<any>(`${this.urlEndPoint}/${cliente.id}`, cliente)
       .pipe(
         catchError((e) => {
           if (e.status == 400) {
             return throwError(() => e);
           }
-          console.error(e.error.mensaje);
-          Swal.fire(e.error.mensaje, e.error.error, 'error');
+          if(e.error.mensaje){
+            console.error(e.error.mensaje);
+          }
           return throwError(() => e);
         })
       );
   }
   delete(id: number): Observable<Cliente> {
-    return this.http
-      .delete<Cliente>(`${this.urlEndPoint}/${id}`, {
-        headers: this.httpHeader,
-      })
-      .pipe(
-        map((response: any) => response.cliente as Cliente),
-        catchError((e) => {
+    return this.http.delete<Cliente>(`${this.urlEndPoint}/${id}`).pipe(
+      map((response: any) => response.cliente as Cliente),
+      catchError((e) => {
+        if (e.error.mensaje) {
           console.error(e.error.mensaje);
-          Swal.fire(e.error.mensaje, e.error.error, 'error');
-          return throwError(() => e);
-        })
-      );
+        }
+        return throwError(() => e);
+      })
+    );
   }
-  subirFoto(archivo: File, id: any): Observable<HttpEvent<{}>> {
+  subirFoto(archivo: File, id: any): Observable<HttpEvent<any>> {
     let formData = new FormData();
     formData.append('archivo', archivo);
     formData.append('id', id);
+
+    // let httpHeaders = new HttpHeaders();
+    // let token = this.authService.token;
+    // if(token != ""){
+    //  httpHeaders = httpHeaders.append('Authorization','Bearer'+token)
+    // }
+
     const req = new HttpRequest(
       'POST',
       `${this.urlEndPoint}/upload`,

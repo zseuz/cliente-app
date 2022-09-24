@@ -108,7 +108,8 @@
             name="region"
             style="width: 400px"
           >
-          <option selected [ngValue]="null">--- selecionar una región ---</option>
+          <option *ngIf="!cliente.region != null" selected [ngValue]="undefined">--- Seleccionar región ---</option>
+
           <option *ngFor="let region of regiones" [ngValue]="region">
               {{ region.nombre }}
             </option>

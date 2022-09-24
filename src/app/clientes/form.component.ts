@@ -17,6 +17,7 @@ export class FormComponent implements OnInit {
   public regiones: Region[];
   public titulo: string = 'Crear cliente';
   public errores: string[] = [];
+  public parameter : Region = new Region('Seleccione una región');
 
   constructor(
     private clienteService: ClienteService,
@@ -24,7 +25,7 @@ export class FormComponent implements OnInit {
     private activatedRouter: ActivatedRoute
   ) {
     this.errores = [];
-    this.regiones = [];
+    this.regiones = [this.parameter];
   }
   getErrores(): string[] {
     return this.errores;

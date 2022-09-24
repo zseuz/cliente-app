@@ -2,8 +2,8 @@ export class Region{
   id:number ;
   nombre:string;
 
-  constructor(){
-    this.id= 0;
-    this.nombre="";
-  }
+  constructor( nombre = ''){
+    this.id = 0;
+    this.nombre = nombre;
+}
 }
