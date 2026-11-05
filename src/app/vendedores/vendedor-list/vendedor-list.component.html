@@ -1,0 +1,56 @@
+<div class="card shadow-sm">
+  <div class="card-body">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+      <div>
+        <h5 class="card-title mb-0">Vendedores</h5>
+        <small class="text-muted">Gestión del equipo comercial</small>
+      </div>
+      <div class="d-flex gap-2">
+        <input type="search" class="form-control" placeholder="Buscar por nombre o email…" [formControl]="search" />
+        <a class="btn btn-primary text-nowrap" routerLink="nuevo">+ Nuevo</a>
+      </div>
+    </div>
+
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-2">
+        <thead class="table-light">
+          <tr>
+            <th>#</th>
+            <th>Nombre</th>
+            <th>Email</th>
+            <th>Teléfono</th>
+            <th>Estado</th>
+            <th class="text-end">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let v of items; trackBy: trackById">
+            <td>{{ v.id }}</td>
+            <td>{{ v.nombre }} {{ v.apellido }}</td>
+            <td>{{ v.email }}</td>
+            <td>{{ v.telefono || '—' }}</td>
+            <td>
+              <span class="badge" [ngClass]="v.activo ? 'bg-success' : 'bg-secondary'">
+                {{ v.activo ? 'Activo' : 'Inactivo' }}
+              </span>
+            </td>
+            <td class="text-end text-nowrap">
+              <a class="btn btn-sm btn-outline-primary me-1" [routerLink]="[v.id, 'editar']">Editar</a>
+              <button class="btn btn-sm btn-outline-danger" (click)="remove(v, 'el vendedor ' + v.nombre + ' ' + v.apellido)">
+                Eliminar
+              </button>
+            </td>
+          </tr>
+          <tr *ngIf="!loading && items.length === 0">
+            <td colspan="6" class="text-center text-muted py-4">No hay vendedores registrados</td>
+          </tr>
+          <tr *ngIf="loading && items.length === 0">
+            <td colspan="6" class="text-center py-4"><div class="spinner-border spinner-border-sm"></div> Cargando…</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <app-pager [meta]="meta" (pageChange)="goTo($event)"></app-pager>
+  </div>
+</div>
