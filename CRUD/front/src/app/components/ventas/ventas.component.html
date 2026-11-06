@@ -1,0 +1,90 @@
+<h3 class="mb-3">Ventas</h3>
+
+@if (mensaje) {
+  <div class="alert alert-success">{{ mensaje }}</div>
+}
+@if (error) {
+  <div class="alert alert-danger">{{ error }}</div>
+}
+
+<div class="card mb-4">
+  <div class="card-body">
+    <h5>{{ editando ? 'Editar venta' : 'Nueva venta' }}</h5>
+
+    <form #f="ngForm" (ngSubmit)="guardar()">
+      <div class="row g-3">
+        <div class="col-md-3">
+          <label class="form-label">Vendedor</label>
+          <select class="form-select" name="id_vendedor" [(ngModel)]="venta.id_vendedor" required>
+            <option [ngValue]="null" disabled>Seleccione...</option>
+            @for (v of vendedores; track v.id_vendedor) {
+              <option [ngValue]="v.id_vendedor">{{ v.nombre }} {{ v.apellido }}</option>
+            }
+          </select>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Producto</label>
+          <select class="form-select" name="id_producto" [(ngModel)]="venta.id_producto" required>
+            <option [ngValue]="null" disabled>Seleccione...</option>
+            @for (p of productos; track p.id_producto) {
+              <option [ngValue]="p.id_producto">{{ p.nombre }} (stock: {{ p.stock }})</option>
+            }
+          </select>
+        </div>
+        <div class="col-md-2">
+          <label class="form-label">Cantidad</label>
+          <input type="number" class="form-control" name="cantidad" [(ngModel)]="venta.cantidad" required min="1">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Fecha</label>
+          <input type="date" class="form-control" name="fecha" [(ngModel)]="venta.fecha" required>
+        </div>
+      </div>
+
+      <p class="mt-3 mb-0">Total: <strong>{{ totalCalculado | currency:'USD':'symbol':'1.0-0' }}</strong></p>
+
+      <div class="mt-3">
+        <button type="submit" class="btn btn-primary me-2" [disabled]="f.invalid">
+          {{ editando ? 'Actualizar' : 'Guardar' }}
+        </button>
+        @if (editando) {
+          <button type="button" class="btn btn-secondary" (click)="cancelar()">Cancelar</button>
+        }
+      </div>
+    </form>
+  </div>
+</div>
+
+<table class="table table-bordered table-striped bg-white">
+  <thead class="table-dark">
+    <tr>
+      <th>ID</th>
+      <th>Vendedor</th>
+      <th>Producto</th>
+      <th>Cantidad</th>
+      <th>Total</th>
+      <th>Fecha</th>
+      <th>Acciones</th>
+    </tr>
+  </thead>
+  <tbody>
+    @for (v of ventas; track v.id_venta) {
+      <tr>
+        <td>{{ v.id_venta }}</td>
+        <td>{{ v.vendedor }}</td>
+        <td>{{ v.producto }}</td>
+        <td>{{ v.cantidad }}</td>
+        <td>{{ v.total | currency:'USD':'symbol':'1.0-0' }}</td>
+        <td>{{ v.fecha }}</td>
+        <td>
+          <button class="btn btn-warning btn-sm me-1" (click)="editar(v)">Editar</button>
+          <button class="btn btn-danger btn-sm" (click)="eliminar(v)">Eliminar</button>
+        </td>
+      </tr>
+    } @empty {
+      <tr>
+        <td colspan="7" class="text-center">No hay ventas registradas</td>
+      </tr>
+    }
+  </tbody>
+</table>

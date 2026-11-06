@@ -36,10 +36,6 @@ const routes:Routes=[
   { path: 'clientes/form', component: FormComponent, canActivate: [AuthGuard, RoleGuard], data: { role: 'ROLE_ADMIN' } },
   { path: 'clientes/form/:id', component: FormComponent, canActivate: [AuthGuard, RoleGuard], data: { role: 'ROLE_ADMIN' } },
   {path:'login',component:LoginComponent},
-  // CRUD de ventas (API Node/Express en /backend) — módulos con carga diferida
-  { path: 'vendedores', loadChildren: () => import('./vendedores/vendedores.module').then((m) => m.VendedoresModule) },
-  { path: 'productos', loadChildren: () => import('./productos/productos.module').then((m) => m.ProductosModule) },
-  { path: 'ventas', loadChildren: () => import('./ventas/ventas.module').then((m) => m.VentasModule) },
 ]
 
 @NgModule({

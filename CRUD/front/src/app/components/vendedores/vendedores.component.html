@@ -1,0 +1,76 @@
+<h3 class="mb-3">Vendedores</h3>
+
+@if (mensaje) {
+  <div class="alert alert-success">{{ mensaje }}</div>
+}
+@if (error) {
+  <div class="alert alert-danger">{{ error }}</div>
+}
+
+<div class="card mb-4">
+  <div class="card-body">
+    <h5>{{ editando ? 'Editar vendedor' : 'Nuevo vendedor' }}</h5>
+
+    <form #f="ngForm" (ngSubmit)="guardar()">
+      <div class="row g-3">
+        <div class="col-md-3">
+          <label class="form-label">Nombre</label>
+          <input class="form-control" name="nombre" [(ngModel)]="vendedor.nombre" required>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Apellido</label>
+          <input class="form-control" name="apellido" [(ngModel)]="vendedor.apellido" required>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Correo</label>
+          <input type="email" class="form-control" name="correo" [(ngModel)]="vendedor.correo" required email>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Telefono</label>
+          <input class="form-control" name="telefono" [(ngModel)]="vendedor.telefono">
+        </div>
+      </div>
+
+      <div class="mt-3">
+        <button type="submit" class="btn btn-primary me-2" [disabled]="f.invalid">
+          {{ editando ? 'Actualizar' : 'Guardar' }}
+        </button>
+        @if (editando) {
+          <button type="button" class="btn btn-secondary" (click)="cancelar()">Cancelar</button>
+        }
+      </div>
+    </form>
+  </div>
+</div>
+
+<table class="table table-bordered table-striped bg-white">
+  <thead class="table-dark">
+    <tr>
+      <th>ID</th>
+      <th>Nombre</th>
+      <th>Apellido</th>
+      <th>Correo</th>
+      <th>Telefono</th>
+      <th>Acciones</th>
+    </tr>
+  </thead>
+  <tbody>
+    @for (v of vendedores; track v.id_vendedor) {
+      <tr>
+        <td>{{ v.id_vendedor }}</td>
+        <td>{{ v.nombre }}</td>
+        <td>{{ v.apellido }}</td>
+        <td>{{ v.correo }}</td>
+        <td>{{ v.telefono }}</td>
+        <td>
+          <button class="btn btn-warning btn-sm me-1" (click)="editar(v)">Editar</button>
+          <button class="btn btn-danger btn-sm" (click)="eliminar(v)">Eliminar</button>
+        </td>
+      </tr>
+    } @empty {
+      <tr>
+        <td colspan="6" class="text-center">No hay vendedores registrados</td>
+      </tr>
+    }
+  </tbody>
+</table>

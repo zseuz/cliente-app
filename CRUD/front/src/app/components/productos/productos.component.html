@@ -1,0 +1,76 @@
+<h3 class="mb-3">Productos</h3>
+
+@if (mensaje) {
+  <div class="alert alert-success">{{ mensaje }}</div>
+}
+@if (error) {
+  <div class="alert alert-danger">{{ error }}</div>
+}
+
+<div class="card mb-4">
+  <div class="card-body">
+    <h5>{{ editando ? 'Editar producto' : 'Nuevo producto' }}</h5>
+
+    <form #f="ngForm" (ngSubmit)="guardar()">
+      <div class="row g-3">
+        <div class="col-md-3">
+          <label class="form-label">Nombre</label>
+          <input class="form-control" name="nombre" [(ngModel)]="producto.nombre" required>
+        </div>
+        <div class="col-md-5">
+          <label class="form-label">Descripcion</label>
+          <input class="form-control" name="descripcion" [(ngModel)]="producto.descripcion">
+        </div>
+        <div class="col-md-2">
+          <label class="form-label">Precio</label>
+          <input type="number" class="form-control" name="precio" [(ngModel)]="producto.precio" required min="0">
+        </div>
+        <div class="col-md-2">
+          <label class="form-label">Stock</label>
+          <input type="number" class="form-control" name="stock" [(ngModel)]="producto.stock" required min="0">
+        </div>
+      </div>
+
+      <div class="mt-3">
+        <button type="submit" class="btn btn-primary me-2" [disabled]="f.invalid">
+          {{ editando ? 'Actualizar' : 'Guardar' }}
+        </button>
+        @if (editando) {
+          <button type="button" class="btn btn-secondary" (click)="cancelar()">Cancelar</button>
+        }
+      </div>
+    </form>
+  </div>
+</div>
+
+<table class="table table-bordered table-striped bg-white">
+  <thead class="table-dark">
+    <tr>
+      <th>ID</th>
+      <th>Nombre</th>
+      <th>Descripcion</th>
+      <th>Precio</th>
+      <th>Stock</th>
+      <th>Acciones</th>
+    </tr>
+  </thead>
+  <tbody>
+    @for (p of productos; track p.id_producto) {
+      <tr>
+        <td>{{ p.id_producto }}</td>
+        <td>{{ p.nombre }}</td>
+        <td>{{ p.descripcion }}</td>
+        <td>{{ p.precio | currency:'USD':'symbol':'1.0-0' }}</td>
+        <td>{{ p.stock }}</td>
+        <td>
+          <button class="btn btn-warning btn-sm me-1" (click)="editar(p)">Editar</button>
+          <button class="btn btn-danger btn-sm" (click)="eliminar(p)">Eliminar</button>
+        </td>
+      </tr>
+    } @empty {
+      <tr>
+        <td colspan="6" class="text-center">No hay productos registrados</td>
+      </tr>
+    }
+  </tbody>
+</table>
